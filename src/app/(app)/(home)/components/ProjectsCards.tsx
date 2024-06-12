@@ -6,7 +6,7 @@ interface ProjectsCardsProps {
 }
 
 export const ProjectsCards = ({ projectName }: ProjectsCardsProps) => {
-	const normalizedProjectName = projectName.replace(/\s/g, '-').toLowerCase()
+	const normalizedProjectName = projectName.replace(/\s/g, '-') // Se usar o lowercase, ele quebra, talvez procurar outra forma
 
 	return (
 		<div
