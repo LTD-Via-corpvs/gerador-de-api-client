@@ -1,60 +1,29 @@
-import { Code } from 'lucide-react'
+'use client'
+
 import Link from 'next/link'
+import { useState } from 'react'
 
-import { Button } from '@/components/ui/button'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { DialogCreateModels } from './DialogCreateModels'
 
-export const AppHeader = () => {
+export const AppHeader = ({
+	hasModalToCreateModel = false,
+}: {
+	hasModalToCreateModel?: boolean
+}) => {
+	const [open, setOpen] = useState(false)
+
 	return (
-		<header className="flex h-16 items-center justify-between border-b bg-white px-6 dark:bg-gray-950">
-			<Link className="flex items-center gap-2 font-semibold" href="#">
-				<Code className="h-6 w-6" />
-				<span className="hidden sm:block">API Generator</span>
-			</Link>
-			<nav className="flex items-center gap-4">
-				<Link
-					className="text-sm font-medium transition-colors hover:text-gray-900 dark:hover:text-gray-50"
-					href="#"
-				>
-					Docs
+		<header className="bg-gray-100  dark:bg-gray-800">
+			<div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-4">
+				<Link href={'/'}>
+					<h1 className="text-lg font-bold text-gray-900 dark:text-gray-50">
+						Gerador de API
+					</h1>
 				</Link>
-				<Link
-					className="text-sm font-medium transition-colors hover:text-gray-900 dark:hover:text-gray-50"
-					href="#"
-				>
-					Pricing
-				</Link>
-				<Link
-					className="text-sm font-medium transition-colors hover:text-gray-900 dark:hover:text-gray-50"
-					href="#"
-				>
-					Contact
-				</Link>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button
-							className="rounded-full bg-slate-400"
-							size="icon"
-							variant="ghost"
-						></Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuLabel>John Doe</DropdownMenuLabel>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>Profile</DropdownMenuItem>
-						<DropdownMenuItem>Settings</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>Logout</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			</nav>
+				{hasModalToCreateModel && (
+					<DialogCreateModels onOpenChange={setOpen} open={open} />
+				)}
+			</div>
 		</header>
 	)
 }
