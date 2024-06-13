@@ -4,12 +4,14 @@ import { TypedUseSelectorHook, useSelector } from 'react-redux'
 import counterSlice from './slices/counterSlice'
 import projectsSlice from './slices/projectsSlice'
 import modelsSlice from './slices/modelsSlice'
+import editSlice from './slices/editSlice'
 
 export const store = configureStore({
 	reducer: {
 		counterSlice,
 		projectsSlice,
 		modelsSlice,
+		editSlice,
 	},
 })
 

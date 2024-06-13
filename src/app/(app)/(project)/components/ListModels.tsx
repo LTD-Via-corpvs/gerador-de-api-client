@@ -8,15 +8,15 @@ import { useDispatch } from 'react-redux'
 import { start } from '@/store/slices/modelsSlice'
 import { useAppSelector } from '@/store'
 
-export const ListModels = ({ projectName }: { projectName: string }) => {
+export const ListModels = ({ projectName }: { projectName?: string }) => {
 	const dispatch = useDispatch()
 	const models = useAppSelector((state) => state.modelsSlice.models)
 
 	useEffect(() => {
-		api(`${'/api/all?project='}${projectName}`)
+		api('/api/all')
 			.then((res) => res.json())
 			.then((data) => {
-				dispatch(start(data.data.models))
+				dispatch(start(data.data.models ?? []))
 			})
 	}, [])
 

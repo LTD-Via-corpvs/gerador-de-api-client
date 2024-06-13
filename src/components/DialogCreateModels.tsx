@@ -19,7 +19,6 @@ import { Label } from '@/components/ui/label'
 import { api } from '@/services/api'
 import { useDispatch } from 'react-redux'
 import { add } from '@/store/slices/modelsSlice'
-import { useParams } from 'next/navigation'
 
 const schema = z.object({
 	modelName: z
@@ -28,6 +27,9 @@ const schema = z.object({
 		.refine((value) => /^[A-Za-z]+$/i.test(value), {
 			message:
 				'Nome do Modelo deve conter apenas letras sem espaços ou caracteres especiais.',
+		})
+		.refine((value) => value[0] !== value[0].toLowerCase(), {
+			message: 'Coloque a primeira letra do nome do modelo em maiúsculo.',
 		}),
 	fileName: z
 		.string()
@@ -40,7 +42,7 @@ const schema = z.object({
 	routeName: z
 		.string()
 		.min(3, 'Nome da Rota deve ter pelo menos 3 caracteres.')
-		.refine((value) => /^[A-Za-z]+$/i.test(value), {
+		.refine((value) => /^[a-z]+$/i.test(value), {
 			message:
 				'Nome da rota deve conter apenas letras sem espaços ou caracteres especiais.',
 		}),
@@ -78,31 +80,29 @@ export function DialogCreateModels({
 
 	const dispatch = useDispatch()
 
-	const params = useParams<{ 'project-name': string }>()
-
-	const denormalizedProjectName = params['project-name'].replace(/-/g, ' ')
-
 	const onSubmit = async (data: createModelSchema) => {
 		console.log(data)
 
 		const { fileName, modelName, routeName, junctionTable } = data
 
+		const normalizeModelname =
+			modelName.charAt(0).toUpperCase() + modelName.slice(1)
+
+		console.log(normalizeModelname)
+
 		try {
-			const response = await api(
-				`${'/api/generate?project=' + denormalizedProjectName}`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						model: modelName,
-						file: fileName,
-						route: routeName,
-						junctionTable: junctionTable,
-					}),
+			const response = await api('/api/generate', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
 				},
-			)
+				body: JSON.stringify({
+					model: normalizeModelname,
+					file: fileName,
+					route: routeName,
+					junctionTable: junctionTable,
+				}),
+			})
 
 			if (response.status === 201) {
 				dispatch(

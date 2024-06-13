@@ -21,7 +21,7 @@ export const TableLIne = ({ file, model, route }: TableLineProps) => {
 			<TableCell>{model}</TableCell>
 			<TableCell>{file}</TableCell>
 			<TableCell>
-				<ModalEditModels onOpenChange={setOpen} open={open} />
+				<ModalEditModels file={file} route={route} name={model} />
 			</TableCell>
 		</TableRow>
 	)
