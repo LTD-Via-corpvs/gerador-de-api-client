@@ -22,11 +22,29 @@ export const modelsSlice = createSlice({
 			state.models = action.payload
 		},
 		add: (state, action: PayloadAction<Model>) => {
-			state.models.push(action.payload)
+			state.models.push({
+				...action.payload,
+				route: '/' + action.payload.name,
+				file: '_' + action.payload.file + '.js',
+			})
+		},
+		edit: (
+			state,
+			action: PayloadAction<{
+				oldRoute: string
+				newRoute: string
+			}>,
+		) => {
+			const index = state.models.findIndex(
+				(model) => model.route === action.payload.oldRoute,
+			)
+			console.log(index, action.payload)
+
+			state.models[index].route = action.payload.newRoute
 		},
 	},
 })
 
-export const { start, add } = modelsSlice.actions
+export const { start, add, edit } = modelsSlice.actions
 
 export default modelsSlice.reducer

@@ -1,25 +1,21 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
+import { z } from 'zod'
+
+import { Button } from '@/components/ui/button'
 import {
 	Card,
 	CardContent,
 	CardDescription,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-
-import { Button } from '@/components/ui/button'
-
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { api } from '@/services/api'
-import { useDispatch } from 'react-redux'
-import { add } from '@/store/slices/modelsSlice'
 import { useAppSelector } from '@/store'
+import { edit } from '@/store/slices/modelsSlice'
 
 const schema = z.object({
 	newRouteName: z
@@ -38,6 +34,7 @@ type EditRouteSchema = z.infer<typeof schema>
 
 export const EditModelTabsRoute = () => {
 	const shablau = useAppSelector((state) => state.editSlice.models)
+	const dispatch = useDispatch()
 
 	const {
 		register,
@@ -68,16 +65,12 @@ export const EditModelTabsRoute = () => {
 				}),
 			})
 
-			if (response.status === 201) {
-				// dispatch(
-				// 	add({
-				// 		file: fileName,
-				// 		name: modelName,
-				// 		route: routeName,
-				// 		newRoute: newRouteName,
-				// 	}),
-				// )
+			console.log(response)
 
+			if (response.status === 201) {
+				console.log('oi')
+
+				dispatch(edit({ oldRoute: shablau.route, newRoute: newRouteName }))
 				reset()
 
 				// TODO: redirect to project page

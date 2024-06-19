@@ -9,11 +9,11 @@ export default function page({
 }: {
 	params: { 'project-name': string }
 }) {
-	// const shablau = params['project-name'].replace(/-/g, ' ')
+	const shablau = params['project-name']
 
 	return (
 		<div className="mx-auto w-full max-w-[1440px] rounded-none border-0 p-6 shadow-none">
-			{/* <Breadcrumb>{shablau}</Breadcrumb> */}
+			<Breadcrumb>{shablau}</Breadcrumb>
 			<Card className="w-full rounded-none border-0 shadow-none">
 				<CardHeader className="px-0">
 					<CardTitle>Informações do Modelo</CardTitle>

@@ -11,7 +11,7 @@ import { Breadcrumb } from '../../../components/Breadcrumb'
 import { DialogCreateProject } from './components/DialogCreateProject'
 import { ProjectsCards } from './components/ProjectsCards'
 
-const page = () => {
+const Page = () => {
 	const [open, setOpen] = useState(false)
 	const dispatch = useDispatch()
 	const projects = useAppSelector((state) => state.projectsSlice.projects)
@@ -39,4 +39,6 @@ const page = () => {
 	)
 }
 
-export default page
+export default Page
+
+// todo refact to remove use client

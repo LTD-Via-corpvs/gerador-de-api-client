@@ -1,7 +1,3 @@
-'use client'
-
-import { useState } from 'react'
-
 import { TableCell, TableRow } from '@/components/ui/table'
 
 import { ModalEditModels } from './ModalEditModels'
@@ -13,8 +9,6 @@ interface TableLineProps {
 }
 
 export const TableLIne = ({ file, model, route }: TableLineProps) => {
-	const [open, setOpen] = useState(false)
-
 	return (
 		<TableRow>
 			<TableCell>{route}</TableCell>

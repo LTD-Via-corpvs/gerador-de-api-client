@@ -1,13 +1,13 @@
 'use client'
 
 import { Pencil } from 'lucide-react'
+import { useDispatch } from 'react-redux'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { start } from '@/store/slices/editSlice'
 
 import { EditModelsTabs } from './editModelTabs/EditModelsTabs'
-import { useDispatch } from 'react-redux'
-import { ModelState, start } from '@/store/slices/editSlice'
 
 interface DialogHeaderModalProps {
 	name: string
@@ -18,7 +18,11 @@ interface DialogHeaderModalProps {
 export function ModalEditModels({ name, file, route }: DialogHeaderModalProps) {
 	const dispatch = useDispatch()
 
-	const handleSetItemToEdit = (item: any) => {
+	const handleSetItemToEdit = (item: {
+		name: string
+		file: string
+		route: string
+	}) => {
 		console.log(item)
 
 		dispatch(start(item))

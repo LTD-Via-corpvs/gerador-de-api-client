@@ -2,10 +2,11 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { set, z } from 'zod'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -27,7 +28,6 @@ import {
 } from '@/components/ui/select'
 import { api } from '@/services/api'
 import { add } from '@/store/slices/projectsSlice'
-import { useRouter } from 'next/navigation'
 
 const schema = z.object({
 	package_manager: z
@@ -61,7 +61,7 @@ export function DialogCreateProject({
 		control,
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
+		formState: { errors },
 		reset,
 	} = useForm<createProjectSchema>({
 		resolver: zodResolver(schema),
@@ -69,7 +69,7 @@ export function DialogCreateProject({
 
 	useEffect(() => {
 		reset()
-	}, [open])
+	}, [open, reset])
 
 	const dispatch = useDispatch()
 

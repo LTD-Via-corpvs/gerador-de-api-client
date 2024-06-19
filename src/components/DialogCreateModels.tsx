@@ -1,8 +1,10 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -17,7 +19,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { api } from '@/services/api'
-import { useDispatch } from 'react-redux'
 import { add } from '@/store/slices/modelsSlice'
 
 const schema = z.object({
@@ -28,7 +29,7 @@ const schema = z.object({
 			message:
 				'Nome do Modelo deve conter apenas letras sem espaços ou caracteres especiais.',
 		})
-		.refine((value) => value[0] !== value[0].toLowerCase(), {
+		.refine((value) => value[0] !== value[0]?.toLowerCase(), {
 			message: 'Coloque a primeira letra do nome do modelo em maiúsculo.',
 		}),
 	fileName: z
@@ -74,9 +75,11 @@ export function DialogCreateModels({
 		},
 	})
 
+	const params = useParams<{ 'project-name': string }>()
+
 	useEffect(() => {
 		reset()
-	}, [open])
+	}, [open, reset])
 
 	const dispatch = useDispatch()
 
@@ -91,18 +94,21 @@ export function DialogCreateModels({
 		console.log(normalizeModelname)
 
 		try {
-			const response = await api('/api/generate', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
+			const response = await api(
+				'/api/generate?project=' + params['project-name'],
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						model: normalizeModelname,
+						file: fileName,
+						route: routeName,
+						junctionTable,
+					}),
 				},
-				body: JSON.stringify({
-					model: normalizeModelname,
-					file: fileName,
-					route: routeName,
-					junctionTable: junctionTable,
-				}),
-			})
+			)
 
 			if (response.status === 201) {
 				dispatch(
