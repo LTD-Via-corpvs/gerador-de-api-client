@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -94,37 +95,37 @@ export function DialogCreateModels({
 		console.log(normalizeModelname)
 
 		try {
-			const response = await api(
-				'/api/generate?project=' + params['project-name'],
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						model: normalizeModelname,
-						file: fileName,
-						route: routeName,
-						junctionTable,
-					}),
+			const response = api('/api/generate?project=' + params['project-name'], {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
 				},
-			)
+				body: JSON.stringify({
+					model: normalizeModelname,
+					file: fileName,
+					route: routeName,
+					junctionTable,
+				}),
+			})
 
-			if (response.status === 201) {
-				dispatch(
-					add({
-						file: fileName,
-						name: modelName,
-						route: routeName,
-					}),
-				)
-
-				// TODO: redirect to project page
-				// TODO: show toast message
-				console.log('Project created successfully')
-			} else {
-				console.error('Failed to create project')
-			}
+			toast.promise(response, {
+				loading: `Criando o modelo ${modelName}...`,
+				success: () => {
+					if (onOpenChange) onOpenChange(false)
+					dispatch(
+						add({
+							file: fileName,
+							name: modelName,
+							route: routeName,
+						}),
+					)
+					reset()
+					return `Modelo ${modelName} criado com sucesso!`
+				},
+				error: () => {
+					return `Erro ao criar o modelo ${modelName}.`
+				},
+			})
 		} catch (error) {
 			console.error('Error:', error)
 		}
@@ -133,7 +134,7 @@ export function DialogCreateModels({
 	return (
 		<Dialog onOpenChange={onOpenChange} open={open}>
 			<DialogTrigger asChild>
-				<Button>Criar Model</Button>
+				<Button>Criar Modelo</Button>
 			</DialogTrigger>
 			<DialogContent className="rounded-lg sm:max-w-[425px]">
 				<DialogHeader>

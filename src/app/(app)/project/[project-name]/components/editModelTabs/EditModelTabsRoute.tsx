@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -33,8 +35,11 @@ const schema = z.object({
 type EditRouteSchema = z.infer<typeof schema>
 
 export const EditModelTabsRoute = () => {
+	const params = useParams<{ 'project-name': string }>()
 	const shablau = useAppSelector((state) => state.editSlice.models)
 	const dispatch = useDispatch()
+
+	const projectName = params['project-name']
 
 	const {
 		register,
@@ -48,37 +53,30 @@ export const EditModelTabsRoute = () => {
 		},
 	})
 
-	const onSubmit = async (data: EditRouteSchema) => {
-		console.log(data)
-
-		const { newRouteName } = data
-
+	const onSubmit = async ({ newRouteName }: EditRouteSchema) => {
 		try {
-			const response = await api('/api/routes', {
+			const response = api('/api/routes?project=' + projectName, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					old_route: shablau.route,
-					new_route: newRouteName,
+					old_route: shablau.route.replace('/', ''),
+					new_route: newRouteName.replace('/', '').toLowerCase(),
 				}),
 			})
 
-			console.log(response)
-
-			if (response.status === 201) {
-				console.log('oi')
-
-				dispatch(edit({ oldRoute: shablau.route, newRoute: newRouteName }))
-				reset()
-
-				// TODO: redirect to project page
-				// TODO: show toast message
-				console.log('Project created successfully')
-			} else {
-				console.error('Failed to create project')
-			}
+			toast.promise(response, {
+				loading: `Atualizando rota ${shablau.route} de ${projectName}.`,
+				success: () => {
+					dispatch(edit({ oldRoute: shablau.route, newRoute: newRouteName }))
+					reset()
+					return `Nome da rota ${shablau.route} alterado para ${newRouteName}!`
+				},
+				error: () => {
+					return `Erro ao atualizar a rota ${shablau.route}.`
+				},
+			})
 		} catch (error) {
 			console.error('Error:', error)
 		}

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -56,6 +57,7 @@ export function DialogCreateProject({
 	onOpenChange,
 }: DialogHeaderModalProps) {
 	const [loading, setLoading] = useState(false)
+	const [packages, setPackages] = useState([])
 
 	const {
 		control,
@@ -68,6 +70,12 @@ export function DialogCreateProject({
 	})
 
 	useEffect(() => {
+		api('/packages', { method: 'GET' })
+			.then((res) => res.json())
+			.then(setPackages)
+	}, [])
+
+	useEffect(() => {
 		reset()
 	}, [open, reset])
 
@@ -76,27 +84,28 @@ export function DialogCreateProject({
 	const router = useRouter()
 
 	const onSubmit = async (data: createProjectSchema) => {
-		console.log(data)
-
 		try {
 			setLoading(true)
 
-			const response = await api('/api/init', {
+			const response = api('/api/init', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify(data),
 			})
-			if (response.status === 201) {
-				dispatch(add(data.project_name))
-				router.push(`/project/${data.project_name}`)
-
-				// TODO: show toast message
-				console.log('Project created successfully')
-			} else {
-				console.error('Failed to create project')
-			}
+			if (onOpenChange) onOpenChange(false)
+			toast.promise(response, {
+				loading: `Gerando ${data.project_name}...`,
+				success: () => {
+					dispatch(add(data.project_name))
+					router.push(`/project/${data.project_name}`)
+					return `${data.project_name} criado com sucesso!`
+				},
+				error: () => {
+					return `Erro ao criar ${data.project_name}.`
+				},
+			})
 		} catch (error) {
 			console.error('Error:', error)
 		} finally {
@@ -141,13 +150,17 @@ export function DialogCreateProject({
 							render={({ field }) => (
 								<Select onValueChange={field.onChange} defaultValue="">
 									<SelectTrigger className="col-span-3">
-										<SelectValue placeholder="Selecione um Package Manager" />
+										<SelectValue
+											className="capitalize"
+											placeholder="Selecione um Package Manager"
+										/>
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="yarn">Yarn</SelectItem>
-										<SelectItem value="npm">NPM</SelectItem>
-										<SelectItem value="bun">Bun</SelectItem>
-										<SelectItem value="pnpm">PNPM</SelectItem>
+										{packages.map((pkg) => (
+											<SelectItem className="capitalize" key={pkg} value={pkg}>
+												{pkg}
+											</SelectItem>
+										))}
 									</SelectContent>
 								</Select>
 							)}
